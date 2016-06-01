@@ -1,0 +1,59 @@
+#include <cstdlib>
+#include <iostream>
+
+using namespace std;
+
+class dynamicArray{
+      public:
+      int sayac;
+      dynamicArray(int initSize) : theSize(initSize), theCapacity(initSize + 10), m(0), sayac(0)
+      {
+       sayilar = new int[theCapacity];       
+      }
+      
+      int size(){return theCapacity;}
+      
+      void add(int x)
+      {
+      if(m == size()) {resize();}
+          sayilar[m] = x;
+          m++; 
+      }
+      
+      int resize()
+      {
+          cout << endl;
+          cout <<"------------------- List Genisletiliyor ------------------" << endl;
+          cout << endl;
+          sayac++;
+          int s = theSize;
+          int *eski_sayilar = sayilar;
+          sayilar = new int[int(theCapacity*2)];
+          for(int k=0; k < s; k++)    
+                  sayilar[k] = eski_sayilar[k];
+          theSize = s;
+          theCapacity = int(theCapacity*2);
+          return theCapacity;           
+      }
+      private:
+              int theSize;
+              int theCapacity;
+              int * sayilar;
+              int m;
+              
+};
+
+
+int main(int argc, char *argv[])
+{
+    dynamicArray myD = dynamicArray(0);
+    cout << myD.size() << endl ;
+    
+    for(int a=0; a<1000; a++)
+            myD.add(30);
+            
+    cout << myD.size() << endl ;
+    cout << "Sayac: " << myD.sayac << endl ;
+    system("PAUSE");
+    return EXIT_SUCCESS;
+}
