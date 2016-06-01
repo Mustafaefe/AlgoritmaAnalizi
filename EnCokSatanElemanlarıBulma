@@ -1,0 +1,309 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package algoritmaanaliziodev1;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author Mustafa
+ */
+public class odev1 {
+    
+    private int N_Col;
+    private int N_Row;
+    private int maxValue = 0;
+    private int ColValue;
+    private int[] toplamlarDizisi;
+    private File file;
+    private String basliklar[] = new String[10];
+    private int[][] veriler; 
+    private String aa = "A B C D E F G H I J K L M N O P R S T U V Y Z W X"; 
+    private Map<Integer, List<Integer>> map_veri;
+    
+    public odev1(int N){
+        map_veri = new HashMap<>();
+        file = new File("tablo1.txt");
+        N_Row = N;
+        N_Col = 25;
+        veriler = new int[N_Row][N_Col];
+        toplamlarDizisi = new int[N_Col];
+        dosyayaVeriYaz();
+        dosyadanVeriOku();
+    }
+    
+    public void setN(int N){
+      
+    }
+    
+    public void dosyadanVeriOku(){
+        try {
+            
+            if (!file.exists()) {
+                System.out.println("Dosya yok");
+                return;
+            }
+            
+            FileReader fileReader = new FileReader(file);
+            String line;
+
+            BufferedReader br = new BufferedReader(fileReader);
+            int index=0;
+            while ((line = br.readLine()) != null) {
+                if(index==0)
+                {
+                    basliklar = line.split(" ");
+                }
+                else
+                {
+                    String[] gecici = line.split(" ");
+                    for(int i=0; i < gecici.length; i++)
+                            veriler[index-1][i] =  Integer.parseInt(gecici[i]);
+                }
+                index++;
+            }
+            
+        } 
+        catch (IOException ex) {
+                Logger.getLogger(AlgoritmaAnaliziOdev1.class.getName()).log(Level.SEVERE, null, ex);
+                System.out.println("Girdim");
+        }
+    }
+    
+    public void dosyayaVeriYaz(){
+        FileWriter fileWriter = null;
+        BufferedWriter bWriter = null;
+        StringBuilder yazilacakString=new StringBuilder();
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            fileWriter = new FileWriter(file);
+            bWriter = new BufferedWriter(fileWriter);
+            
+            //baslıkları dosyaya yazar
+            bWriter.write(aa);
+            bWriter.newLine();
+            
+            for(int i=0; i< N_Row; i++){
+                for(int j=0; j< 25; j++){
+                    Random r = new Random();
+                    String a = r.nextInt(2)+"";
+                    if(j==59) yazilacakString.append(a);
+                    else yazilacakString.append(a+" ");
+                }
+                bWriter.write(yazilacakString.toString()); 
+                bWriter.newLine();
+                yazilacakString.delete(0, yazilacakString.length());
+            }
+            bWriter.close();
+        } catch (IOException ex) {
+            Logger.getLogger(odev1.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                fileWriter.close();
+            } catch (IOException ex) {
+                Logger.getLogger(odev1.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    public void matrisYazdir(){
+        for(int j=0; j< N_Col; j++){
+                System.out.print(basliklar[j]+" ");
+        }
+        System.out.println("");
+        for(int i=0; i< N_Row; i++){
+            for(int j=0; j< N_Col; j++){
+                System.out.print(veriler[i][j]+" ");
+            }
+            System.out.println("");
+        }
+       
+    }
+    
+    public void matrisYazdir(int sutun){
+        for(int i=0; i< N_Row; i++){
+            for(int j=sutun; j< sutun+1; j++){
+                System.out.print(veriler[i][j]+" ");
+            }
+            System.out.println("");
+        }
+    }
+    
+    public String maxOneCol(){
+        int localMax=0;
+        int j=0;
+        for(int i=0; i< N_Col; i++){
+            for(j=0; j< N_Row; j++){
+                if( veriler[j][i] == 1){
+                    localMax++;
+                    
+                }
+            }
+            toplamlarDizisi[i] = localMax;
+            if(localMax > maxValue){
+                maxValue = localMax;
+                ColValue = i;
+            }
+            localMax=0;
+        }
+        return ColValue+"-"+maxValue;
+    }
+    
+    public void sirala(){
+        int temp;  
+        String tempS;
+        for (int i=1; i<toplamlarDizisi.length; i++)
+        {
+            for(int j=0; j<toplamlarDizisi.length-i; j++)
+            {
+                if (toplamlarDizisi[j] < toplamlarDizisi [j+1])
+                {
+                    temp = toplamlarDizisi [j];
+                    toplamlarDizisi [j] = toplamlarDizisi [j+1];
+                    toplamlarDizisi [j+1] = temp;
+                    
+                    tempS = basliklar[j];
+                    basliklar[j] = basliklar[j+1];
+                    basliklar[j+1] = tempS;
+                }
+            }
+        }
+                    
+    }
+    
+    public List<Integer> encokSecilenler(){
+        List<Integer> urunlerinSayisi = new ArrayList<>();        
+        
+        for(int i=0; i<N_Col; i++){
+            if(!urunlerinSayisi.contains(toplamlarDizisi[i]))
+                urunlerinSayisi.add(toplamlarDizisi[i]);
+        }
+        
+        for(int i=0; i<urunlerinSayisi.size(); i++){
+            int a = urunlerinSayisi.get(i);
+            ArrayList<Integer> indisler = new ArrayList();
+            for(int j=0; j<N_Col; j++){
+                if(toplamlarDizisi[j] == a){
+                    indisler.add(j);
+                }
+            }
+            map_veri.put(a, indisler);
+        }
+        return urunlerinSayisi;
+    }
+    
+    public void bul(int sayi){
+        List<Integer> urunlerinSayisi = encokSecilenler();
+        List<List<Integer>> indisListesi = new ArrayList<>();
+        for(int i=0; i<sayi; i++){
+            int secilen = urunlerinSayisi.get(i);
+            List<Integer> indisler = map_veri.get(secilen);
+            indisListesi.add(indisler);
+        }
+        
+        if(sayi==1){
+            for(Integer a : indisListesi.get(0)){
+                System.out.println(basliklar[a]);
+            }
+        }
+        
+        if(sayi==2){
+            for(Integer a : indisListesi.get(0)){
+                for(Integer b : indisListesi.get(1)){
+                    System.out.println(basliklar[a]+" "+basliklar[b]);
+                }
+            }
+        }
+        
+        if(sayi==3){
+            for(Integer a : indisListesi.get(0)){
+                for(Integer b : indisListesi.get(1)){
+                    for(Integer c : indisListesi.get(2)){
+                        System.out.println(basliklar[a]+" "+basliklar[b]+" "+basliklar[c]);
+                    }
+                }
+            }
+        }
+        
+        if(sayi==4){
+            for(Integer a : indisListesi.get(0)){
+                for(Integer b : indisListesi.get(1)){
+                    for(Integer c : indisListesi.get(2)){
+                        for(Integer d : indisListesi.get(3)){
+                            System.out.println(basliklar[a]+" "+basliklar[b]+" "+basliklar[c]+" "+basliklar[d]);
+                        }
+                    }
+                }
+            }
+        }
+      
+        
+    }
+    
+    public void yazdir3(){
+        System.out.println("");
+        for(int i=0; i<N_Col; i++){
+            System.out.print(basliklar[i]+":");
+            System.out.print(toplamlarDizisi[i]+" - ");
+        }
+        System.out.println("");
+    }
+    
+    /*public void mapYapisi(){
+        String key = "Sutun-";
+        String keyPlus = "";
+        for(int i=0; i<N_Col; i++){
+            keyPlus = i+"";
+            map_veri.put(key+keyPlus, toplamlarDizisi[i]);
+        }
+        for(Entry<String, Integer> entry : map_veri.entrySet()) {
+            String key1 = entry.getKey();
+            Integer value1 = entry.getValue();
+            System.out.println(key1+" - "+value1);
+        }
+    }*/
+    
+    public void basliklariYazdir(){
+        for(int i=0; i<N_Col; i++)
+            System.out.print(basliklar[i]+" ");
+    }
+    
+    public static void main(String[] args) {
+        System.out.println("Lütfen satir sayisini giriniz:");
+        Scanner toplamlarDizisi = new Scanner(System.in);
+        int satirsayisi = toplamlarDizisi.nextInt();
+        odev1 ornek =  new odev1(satirsayisi);
+        String encok1 = ornek.maxOneCol();
+        ornek.matrisYazdir();
+        System.out.println("En çok : "+encok1.split("-")[1]+"  İndis : "+encok1.split("-")[0]);
+        ornek.yazdir3();
+        ornek.sirala();
+        ornek.yazdir3();
+        //ornek.basliklariYazdir();
+        ornek.bul(1);
+        ornek.bul(2);
+        //ornek.bul(3);
+        //ornek.bul(4);
+        
+    }
+}
